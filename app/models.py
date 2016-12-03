@@ -1,4 +1,5 @@
 from app import db
+from flask_restful import Resource, Api
 
 ROLE_USER = 0
 ROLE_ADMIN = 1
