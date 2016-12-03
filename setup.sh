@@ -4,3 +4,4 @@ pip install flask
 pip install sqlalchemy
 pip install flask-sqlalchemy
 pip install sqlalchemy-migrate
+pip install flask-restful
