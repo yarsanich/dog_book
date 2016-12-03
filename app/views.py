@@ -15,14 +15,6 @@ class HelloWorld(Resource):
     def get(self):
         return {'hello': 'world'}
 
-class Dogs(Resource):
-    def get(self):
-        users_query = models.Dog.query.all()
-        return users_query
-
-    def put(self):
-        return {"todo_id": 1}
-
 class Gender(Resource):
     def get(self, gender_id):
         try:
@@ -230,6 +222,33 @@ class Dogs(Resource):
         except Exception as e:
             return e
 
+    def post(self):
+        try:
+            parser.add_argument('gender')
+            parser.add_argument('status')
+            parser.add_argument('region')
+            parser.add_argument('size')
+            args = parser.parse_args()
+            new_args = {}
+            for arg in args:
+                if args[str(arg)]!=None:
+                    new_args[str(arg)] = args[str(arg)]
+            print(new_args)
+            execute_code = "models.Dog.query.filter_by("
+            for arg in new_args:
+
+                execute_code += "%s = %s," % (str(arg),new_args[str(arg)])
+            execute_code = execute_code[0:-1] + ").all()"
+
+            print(execute_code)
+            dogs_query = eval(execute_code)
+            res = {}
+            for i in range(len(dogs_query)):
+                res[i] = dogs_query[i].to_dict()
+            return res,201
+        except Exception as e:
+            return e
+
 class User(Resource):
     def get(self, user_id):
         try:
@@ -274,5 +293,30 @@ class Users(Resource):
                                args['email'], args['aditional_info'], args['credit_number'], args['role'])
             user.add(user)
             return "200 OK"
+        except Exception as e:
+            return e
+
+    def post(self):
+        try:
+            parser.add_argument('status')
+            parser.add_argument('region')
+            args = parser.parse_args()
+            new_args = {}
+            for arg in args:
+                if args[str(arg)]!=None:
+                    new_args[str(arg)] = args[str(arg)]
+            print(new_args)
+            execute_code = "models.User.query.filter_by("
+            for arg in new_args:
+
+                execute_code += "%s = %s," % (str(arg),new_args[str(arg)])
+            execute_code = execute_code[0:-1] + ").all()"
+
+            print(execute_code)
+            users_query = eval(execute_code)
+            res = {}
+            for i in range(len(users_query)):
+                res[i] = users_query[i].to_dict()
+            return res,201
         except Exception as e:
             return e
