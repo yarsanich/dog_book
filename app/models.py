@@ -12,18 +12,23 @@ class User(db.Model):
     second_name = db.Column(db.String(100))
     phone_number = db.Column(db.String(100))
     password = db.Column(db.String(100))
-    birth_date = db.Column(db.DateTime)
-    region = db.Column(db.String(200))
-    address = db.Column(db.String(200))
+    birth_date = db.Column(db.DateTime,nullable = True)
+    region = db.Column(db.Integer,db.ForeignKey('region.id'),nullable = True)
+    status = db.Column(db.Integer,db.ForeignKey('volounteer_status'),nullable = True)
+    address = db.Column(db.String(200),nullable = True)
     email = db.Column(db.String(120), unique = True)
-    aditional_info = db.Column(db.Text)
-    credit_number = db.Column(db.String(200))
+    aditional_info = db.Column(db.Text,nullable = True)
+    credit_number = db.Column(db.String(200),nullable = True)
     role = db.Column(db.SmallInteger, default = ROLE_USER)
 
     def __repr__(self):
         return '<User %r %r>' % (self.first_name,self.second_name)
 
-class Status(db.Model):
+class Dog_Status(db.Model):
+    id = db.Column(db.Integer,primary_key = True)
+    status_title = db.Column(db.String(300))
+
+class Volounteer_Status(db.Model):
     id = db.Column(db.Integer,primary_key = True)
     status_title = db.Column(db.String(300))
 
@@ -41,10 +46,10 @@ class Size(db.Model):
 
 class Dog(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    age = db.Column(db.String(100))
-    aditional_info = db.Column(db.Text)
+    age = db.Column(db.String(100),nullable = True)
+    aditional_info = db.Column(db.Text,nullable = True)
     volnteer_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    status = db.Column(db.Integer,db.ForeignKey('status.id'))
+    status = db.Column(db.Integer,db.ForeignKey('dog_status.id'))
     gender = db.Column(db.Integer,db.ForeignKey('gender.id'))
     region = db.Column(db.Integer,db.ForeignKey('region.id'))
     size = db.Column(db.Integer,db.ForeignKey('size.id'))
