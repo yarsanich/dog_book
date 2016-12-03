@@ -9,4 +9,3 @@ api = Api(app)
 from app import models, views
 
 api.add_resource(views.HelloWorld, '/')
-api.add_resource(views.HelloWorld, '/')
