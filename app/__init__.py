@@ -6,6 +6,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 api = Api(app)
-from app import models
+from app import models, views
 
-api.add_resource(models.HelloWorld, '/')
+api.add_resource(views.HelloWorld, '/')
+api.add_resource(views.HelloWorld, '/')

@@ -1,7 +1,6 @@
 from app import app, api
+from flask_restful import Resource, Api
 
-
-#@app.route('/')
-#@app.route('/index')
-# def index():
-#     return "Hello, World!"
+class HelloWorld(Resource):
+    def get(self):
+        return {'hello': 'world'}
