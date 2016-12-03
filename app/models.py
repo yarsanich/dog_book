@@ -26,7 +26,7 @@ class User(db.Model):
     second_name = db.Column(db.String(100))
     phone_number = db.Column(db.String(100))
     password = db.Column(db.String(100))
-    birth_date = db.Column(db.DateTime,nullable = True)
+    birth_date = db.Column(db.String(100),nullable = True)
     region = db.Column(db.Integer,db.ForeignKey('region.id'),nullable = True)
     status = db.Column(db.Integer,db.ForeignKey('volounteer_status.id'),nullable = True)
     address = db.Column(db.String(200),nullable = True)
@@ -57,7 +57,7 @@ class User(db.Model):
         return {"id":self.id,
                 "first_name":self.first_name,
                 "second_name":self.second_name,
-                "phone_number":selfcredit.phone_number,
+                "phone_number":self.phone_number,
                 "password":self.password,
                 "birth_date":self.birth_date,
                 "region":self.region,
@@ -104,7 +104,7 @@ class Region(db.Model):
     id = db.Column(db.Integer,primary_key = True)
     region_title = db.Column(db.String(300))
 
-    def __init__(self,status_title):
+    def __init__(self,region_title):
         self.region_title = region_title
 
     def add(self, resource):
@@ -152,10 +152,10 @@ class Dog(db.Model):
     region = db.Column(db.Integer,db.ForeignKey('region.id'))
     size = db.Column(db.Integer,db.ForeignKey('size.id'))
 
-    def __init__(self,age,aditional_info,volnteer_id,status,gender,region,size):
+    def __init__(self,age,aditional_info,volounteer_id,status,gender,region,size):
         self.age = age
         self.aditional_info = aditional_info
-        self.volnteer_id = volnteer_id
+        self.volounteer_id = volounteer_id
         self.status = status
         self.gender = gender
         self.region = region
@@ -169,7 +169,7 @@ class Dog(db.Model):
         return {"id":self.id,
                 "age":self.age,
                 "aditional_info":self.aditional_info,
-                "volonteer_id":self.volnteer_id,
+                "volounteer_id":self.volounteer_id,
                 "status":self.status,
                 "gender":self.gender,
                 "region":self.region,
