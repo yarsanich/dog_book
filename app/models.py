@@ -74,7 +74,7 @@ class Dog(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     age = db.Column(db.String(100),nullable = True)
     aditional_info = db.Column(db.Text,nullable = True)
-    volnteer_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    volounteer_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     status = db.Column(db.Integer,db.ForeignKey('dog_status.id'))
     gender = db.Column(db.Integer,db.ForeignKey('gender.id'))
     region = db.Column(db.Integer,db.ForeignKey('region.id'))
