@@ -426,3 +426,8 @@ def get_auth_token():
 @auth.login_required
 def get_resource():
     return jsonify({'data': 'Hello, %s!' % g.user.email})
+
+@app.route('/logout')
+def logout():
+   g.user = None
+   return ('Logout', 401)
