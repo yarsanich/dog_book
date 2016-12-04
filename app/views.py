@@ -2,7 +2,7 @@ import json
 import werkzeug
 import os
 from app import app, api, db
-from flask import request, jsonify, make_response,redirect,url_for,send_from_directory,abort,g
+from flask import request, jsonify, make_response,redirect,url_for,send_from_directory,abort,g,session
 from werkzeug.utils import secure_filename
 from flask_restful import Resource, Api, reqparse
 from config import ALLOWED_EXTENSIONS,auth
@@ -29,6 +29,7 @@ class Gender(Resource):
             return users_query.to_dict()
         except AttributeError:
             return 404
+    @auth.login_required
     def delete(self, gender_id):
         try:
             users_query = models.Gender.query.filter_by(id=gender_id).first()
@@ -45,6 +46,7 @@ class Genders(Resource):
         for i in range(len(users_query)):
             res[i] = users_query[i].to_dict()
         return res
+    @auth.login_required
     def put(self):
         try:
             parser.add_argument('gender_title')
@@ -62,6 +64,7 @@ class Size(Resource):
             return users_query.to_dict()
         except AttributeError:
             return 404
+    @auth.login_required
     def delete(self, gender_id):
         try:
             users_query = models.Size.query.filter_by(id=gender_id).first()
@@ -78,6 +81,7 @@ class Sizes(Resource):
         for i in range(len(users_query)):
             res[i] = users_query[i].to_dict()
         return res
+    @auth.login_required
     def put(self):
         try:
             parser.add_argument('size_title')
@@ -95,6 +99,7 @@ class Region(Resource):
             return users_query.to_dict()
         except AttributeError:
             return 404
+    @auth.login_required
     def delete(self, gender_id):
         try:
             users_query = models.Region.query.filter_by(id=gender_id).first()
@@ -111,6 +116,7 @@ class Regions(Resource):
         for i in range(len(users_query)):
             res[i] = users_query[i].to_dict()
         return res
+    @auth.login_required
     def put(self):
         try:
             parser.add_argument('region_title')
@@ -128,6 +134,7 @@ class Dog_Status(Resource):
             return users_query.to_dict()
         except AttributeError:
             return 404
+    @auth.login_required
     def delete(self, gender_id):
         try:
             users_query = models.Dog_Status.query.filter_by(id=gender_id).first()
@@ -144,6 +151,7 @@ class Dog_Statuses(Resource):
         for i in range(len(users_query)):
             res[i] = users_query[i].to_dict()
         return res
+    @auth.login_required
     def put(self):
         try:
             parser.add_argument('status_title')
@@ -161,6 +169,7 @@ class Volounteer_Status(Resource):
             return users_query.to_dict()
         except AttributeError:
             return 404
+    @auth.login_required
     def delete(self, gender_id):
         try:
             users_query = models.Volounteer_Status.query.filter_by(id=gender_id).first()
@@ -177,6 +186,7 @@ class Volounteer_Statuses(Resource):
         for i in range(len(users_query)):
             res[i] = users_query[i].to_dict()
         return res
+    @auth.login_required
     def put(self):
         try:
             parser.add_argument('status_title')
@@ -195,6 +205,28 @@ class Dog(Resource):
             return users_query.to_dict()
         except AttributeError:
             return 404
+    @auth.login_required
+    def put(self, dog_id):
+        try:
+            parser.add_argument('age')
+            parser.add_argument('aditional_info')
+            parser.add_argument('volounteer_id')
+            parser.add_argument('gender')
+            parser.add_argument('status')
+            parser.add_argument('region')
+            parser.add_argument('size')
+            args = parser.parse_args()
+            print(args)
+            session = db.session()
+            u = session.query(models.Dog).filter_by(id=dog_id)
+            for arg in args:
+                if (args[str(arg)] != None):
+                    u.update({"%s" % (str(arg)):args[str(arg)]})
+            session.commit()
+            return "200 OK"
+        except Exception as e:
+            return e
+    @auth.login_required
     def delete(self, dog_id):
         try:
             users_query = models.Dog.query.filter_by(id=dog_id).first()
@@ -211,6 +243,7 @@ class Dogs(Resource):
         for i in range(len(users_query)):
             res[i] = users_query[i].to_dict()
         return res
+    @auth.login_required
     def put(self):
         try:
             parser.add_argument('age')
@@ -230,6 +263,7 @@ class Dogs(Resource):
         except Exception as e:
             return e
 
+    @auth.login_required
     def post(self):
         try:
             parser.add_argument('gender')
@@ -265,6 +299,7 @@ class User(Resource):
             return users_query.to_dict()
         except AttributeError:
             return 404
+    @auth.login_required
     def delete(self, user_id):
         try:
             users_query = models.User.query.filter_by(id=user_id).first()
@@ -273,7 +308,31 @@ class User(Resource):
             return "200 OK"
         except AttributeError:
             return 404
-
+    def put(self, user_id):
+        try:
+            parser.add_argument('first_name')
+            parser.add_argument('second_name')
+            parser.add_argument('password')
+            parser.add_argument('phone_number')
+            parser.add_argument('birth_date')
+            parser.add_argument('region')
+            parser.add_argument('status')
+            parser.add_argument('address')
+            parser.add_argument('email')
+            parser.add_argument('aditional_info')
+            parser.add_argument('credit_number')
+            parser.add_argument('role')
+            args = parser.parse_args()
+            print(args)
+            session = db.session()
+            u = session.query(models.User).filter_by(id=user_id)
+            for arg in args:
+                if (args[str(arg)] != None):
+                    u.update({"%s" % (str(arg)):args[str(arg)]})
+            session.commit()
+            return "200 OK"
+        except Exception as e:
+            return e
 class Users(Resource):
     @auth.login_required
     def get(self):
@@ -283,6 +342,7 @@ class Users(Resource):
             res[i] = users_query[i].to_dict()
         print res
         return res
+    @auth.login_required
     def put(self):
         try:
             parser.add_argument('first_name')
@@ -311,7 +371,7 @@ class Users(Resource):
             return "200 OK"
         except Exception as e:
             return e
-
+    @auth.login_required
     def post(self):
         try:
             parser.add_argument('status')
@@ -340,6 +400,7 @@ class Users(Resource):
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
 
 @app.route('/api/dogs/<dog_id>/photo', methods=['POST','GET'])
 def file_upload_dog(dog_id):
@@ -426,8 +487,3 @@ def get_auth_token():
 @auth.login_required
 def get_resource():
     return jsonify({'data': 'Hello, %s!' % g.user.email})
-
-@app.route('/logout')
-def logout():
-   g.user = None
-   return ('Logout', 401)
