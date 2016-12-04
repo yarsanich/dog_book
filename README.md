@@ -1,2 +1,4 @@
 # dog_book
-Dog Book project
+Symphony Solutions KindHack 2016
+Dog Book
+Flask + Flask Restfull
