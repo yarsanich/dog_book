@@ -1,3 +1,5 @@
 dogbook/
 */__pycache__
 __pycache__
+db_repository
+app.db

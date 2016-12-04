@@ -30,7 +30,7 @@ class Gender(Resource):
         except AttributeError:
             return 404
 
-    @auth.login_required
+    #@auth.login_required
     def delete(self, gender_id):
         try:
             users_query = models.Gender.query.filter_by(id=gender_id).first()
@@ -47,7 +47,7 @@ class Genders(Resource):
         for i in range(len(users_query)):
             res.append(users_query[i].to_dict())
         return res
-    @auth.login_required
+    #@auth.login_required
     def put(self):
         try:
             parser.add_argument('gender_title')
