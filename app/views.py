@@ -499,7 +499,7 @@ def verify_password(email_or_token, password):
     return True
 
 def before_request():
-    print current_user
+    #print current_user
     g.user = current_user
 
 @app.route('/api/token')
