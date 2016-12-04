@@ -43,9 +43,9 @@ class Gender(Resource):
 class Genders(Resource):
     def get(self):
         users_query = models.Gender.query.all()
-        res = {}
+        res = []
         for i in range(len(users_query)):
-            res[i] = users_query[i].to_dict()
+            res.append(users_query[i].to_dict())
         return res
     @auth.login_required
     def put(self):
@@ -78,9 +78,9 @@ class Size(Resource):
 class Sizes(Resource):
     def get(self):
         users_query = models.Size.query.all()
-        res = {}
+        res = []
         for i in range(len(users_query)):
-            res[i] = users_query[i].to_dict()
+            res.append(users_query[i].to_dict())
         return res
     @auth.login_required
     def put(self):
@@ -113,9 +113,9 @@ class Region(Resource):
 class Regions(Resource):
     def get(self):
         users_query = models.Region.query.all()
-        res = {}
+        res = []
         for i in range(len(users_query)):
-            res[i] = users_query[i].to_dict()
+            res.append(users_query[i].to_dict())
         return res
     @auth.login_required
     def put(self):
@@ -148,9 +148,9 @@ class Dog_Status(Resource):
 class Dog_Statuses(Resource):
     def get(self):
         users_query = models.Dog_Status.query.all()
-        res = {}
+        res = []
         for i in range(len(users_query)):
-            res[i] = users_query[i].to_dict()
+            res.append(users_query[i].to_dict())
         return res
 
     @auth.login_required
@@ -184,9 +184,9 @@ class Volounteer_Status(Resource):
 class Volounteer_Statuses(Resource):
     def get(self):
         users_query = models.Volounteer_Status.query.all()
-        res = {}
+        res = []
         for i in range(len(users_query)):
-            res[i] = users_query[i].to_dict()
+            res.append(users_query[i].to_dict())
         return res
     @auth.login_required
     def put(self):
@@ -240,9 +240,9 @@ class Dog(Resource):
 class Dogs(Resource):
     def get(self):
         users_query = models.Dog.query.all()
-        res = {}
+        res = []
         for i in range(len(users_query)):
-            res[i] = users_query[i].to_dict()
+            res.append(users_query[i].to_dict())
         return res
     def put(self):
         parser.add_argument('age')
@@ -342,10 +342,9 @@ class Users(Resource):
     @auth.login_required
     def get(self):
         users_query = models.User.query.all()
-        res = {}
+        res = []
         for i in range(len(users_query)):
-            res[i] = users_query[i].to_dict()
-        print res
+            res.append(users_query[i].to_dict())
         return res
     @auth.login_required
     def put(self):
@@ -440,7 +439,7 @@ def file_upload_dog(dog_id):
     </form>
     '''
 
-@app.route('/api/users/<user_id>/photo', methods=['POST','GET'])
+@app.route('/api/users/<user_id>/photo', methods=['POST'])
 def file_upload_user(user_id):
     if request.method == 'POST':
         # check if the post request has the file part
@@ -456,16 +455,17 @@ def file_upload_user(user_id):
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            session = db.session()
-            u = session.query(models.Users).get(user_id)
-            u.photo = filename
-            session.commit()
-    return '''
-    <form action="" method=post enctype=multipart/form-data>
-      <p><input type=file name=file>
-         <input type=submit value=Upload>
-    </form>
-    '''
+            photo = models.Photo(user_id,filename)
+            photo.add(photo)
+
+class user_photos(Resource):
+    def get(self,user_id):
+        photo_query = models.Photo.query.all()
+        res = []
+        for i in range(len(photo_query)):
+            res.append(photo_query[i].to_dict())
+        return res
+
 
 @app.route('/photos/<filename>')
 def uploaded_file(filename):

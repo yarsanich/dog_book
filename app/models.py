@@ -25,7 +25,6 @@ def to_json(model):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    photo = db.Column(db.String(300),nullable = True)
     first_name = db.Column(db.String(100))
     second_name = db.Column(db.String(100))
     phone_number = db.Column(db.String(100))
@@ -157,7 +156,7 @@ class Size(db.Model):
     size_title = db.Column(db.String(300))
 
     def __init__(self,status_title):
-        self.size_title = size_title
+        self.size_title = status_title
 
     def add(self, resource):
         db.session.add(resource)
@@ -167,8 +166,8 @@ class Size(db.Model):
         return {"id":self.id,"size_title":self.size_title}
 
 class Dog(db.Model):
+    __tablename__ = "dog"
     id = db.Column(db.Integer, primary_key = True)
-    photo = db.Column(db.String(300),nullable = True)
     age = db.Column(db.Integer,nullable = True)
     aditional_info = db.Column(db.Text,nullable = True)
     volounteer_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -199,5 +198,27 @@ class Dog(db.Model):
                 "gender":self.gender,
                 "region":self.region,
                 "size":self.size,
-                "photo":self.photo
+                }
+
+class Photo(db.Model):
+    __tablename__ = "photo"
+    id = db.Column(db.Integer,primary_key = True)
+    filepath = db.Column(db.String(100),unique = True)
+    dog = db.Column(db.ForeignKey("dog.id"),nullable = True)
+    user = db.Column(db.ForeignKey("user.id"),nullable = True)
+
+    def __init__(self,id,filepath):
+        self.dog = id
+        self.filepath = filepath
+
+    def add(self, resource):
+        db.session.add(resource)
+        return db.session.commit()
+
+    def to_dict(self):
+        return {
+                "id":self.id,
+                "dog":self.dog,
+                "filepath":self.filepath,
+                "user":self.user,
                 }

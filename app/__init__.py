@@ -30,6 +30,8 @@ api.add_resource(views.Region, '/api/regions/<int:regions_id>')
 api.add_resource(views.Sizes, '/api/sizes/')
 api.add_resource(views.Size, '/api/sizes/<int:sizes_id>')
 
+api.add_resource(views.user_photos, '/api/users/<int:user_id>/photo')
+
 #api.add_resource(views.Dog, '/api/dogs/<int:dog_id>')
 #api.add_resource(views.User, '/api/users/<int:user_id>')
 #api.add_resource(views.Users, '/api/users/')
