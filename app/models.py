@@ -1,5 +1,8 @@
-from app import db
+from app import db,app
 from flask_restful import Api, Resource
+from passlib.apps import custom_app_context as pwd_context
+from itsdangerous import (TimedJSONWebSignatureSerializer
+                          as Serializer, BadSignature, SignatureExpired)
 import sqlalchemy.types as types
 import json
 
@@ -36,11 +39,10 @@ class User(db.Model):
     credit_number = db.Column(db.String(200),nullable = True)
     role = db.Column(db.SmallInteger, default = ROLE_USER)
 
-    def __init__(self,first_name,second_name,phone_number,password,birth_date,region,status,address,email,aditional_info,credit_number,role):
+    def __init__(self,first_name,second_name,phone_number,birth_date,region,status,address,email,aditional_info,credit_number,role):
         self.first_name = first_name
         self.second_name = second_name
         self.phone_number = phone_number
-        self.password = password
         self.birth_date = birth_date
         self.region = region
         self.status = status
@@ -69,6 +71,28 @@ class User(db.Model):
                 "credit_number":self.credit_number,
                 "role":self.role,
                 }
+    def hash_password(self, password):
+        self.password_hash = pwd_context.encrypt(password)
+
+    def verify_password(self, password):
+        return pwd_context.verify(password, self.password_hash)
+
+    def generate_auth_token(self, expiration=600):
+        s = Serializer(app.config['SECRET_KEY'], expires_in=expiration)
+        return s.dumps({'id': self.id})
+
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except SignatureExpired:
+            return None    # valid token, but expired
+        except BadSignature:
+            return None    # invalid token
+        user = User.query.get(data['id'])
+        return user
+
 
 class Dog_Status(db.Model):
     __tablename__ = 'dog_status'

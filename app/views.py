@@ -1,11 +1,14 @@
-from app import app, api, db
-from flask import request, jsonify, make_response,redirect,url_for,send_from_directory
-from werkzeug.utils import secure_filename
-from flask_restful import Resource, Api, reqparse
-from config import ALLOWED_EXTENSIONS
 import json
 import werkzeug
 import os
+from app import app, api, db
+from flask import request, jsonify, make_response,redirect,url_for,send_from_directory,abort
+from werkzeug.utils import secure_filename
+from flask_restful import Resource, Api, reqparse
+from config import ALLOWED_EXTENSIONS,auth
+from passlib.apps import custom_app_context as pwd_context
+from itsdangerous import (TimedJSONWebSignatureSerializer
+                          as Serializer, BadSignature, SignatureExpired)
 from app import models
 
 
@@ -272,6 +275,7 @@ class User(Resource):
             return 404
 
 class Users(Resource):
+    @auth.login_required
     def get(self):
         users_query = models.User.query.all()
         res = {}
@@ -293,10 +297,15 @@ class Users(Resource):
             parser.add_argument('credit_number')
             parser.add_argument('role')
             args = parser.parse_args()
+            if args['email'] is None or args['password'] is None:
+                abort(400)    # missing arguments
+            if models.User.query.filter_by(email=args['email']).first() is not None:
+                abort(400)    # existing user
             user = models.User(args['first_name'], args['second_name'],
-                               args['phone_number'], args['password'], args['birth_date'],
+                               args['phone_number'], args['birth_date'],
                                args['region'], args['status'], args['address'],
                                args['email'], args['aditional_info'], args['credit_number'], args['role'])
+            models.User.hash_password(args["password"])
             user.add(user)
             return "200 OK"
         except Exception as e:
@@ -389,3 +398,27 @@ def file_upload_user(user_id):
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
+
+@auth.verify_password
+def verify_password(email_or_token, password):
+    # first try to authenticate by token
+    user = models.User.verify_auth_token(email_or_token)
+    if not user:
+        # try to authenticate with email/password
+        user = models.User.query.filter_by(email=email_or_token).first()
+        if not user or not models.User.verify_password(password):
+            return False
+    g.user = user
+    return True
+
+@app.route('/api/token')
+@auth.login_required
+def get_auth_token():
+    token = g.models.user.generate_auth_token(600)
+    return jsonify({'token': token.decode('ascii'), 'duration': 600})
+
+
+@app.route('/api/resource')
+@auth.login_required
+def get_resource():
+    return jsonify({'data': 'Hello, %s!' % g.models.Useremail})
