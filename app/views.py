@@ -322,7 +322,7 @@ class User(Resource):
             parser.add_argument('birth_date')
             parser.add_argument('region')
             parser.add_argument('status')
-            sadasparser.add_argument('address')
+            parser.add_argument('address')
             parser.add_argument('email')
             parser.add_argument('aditional_info')
             parser.add_argument('credit_number')
