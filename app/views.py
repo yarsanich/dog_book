@@ -1,7 +1,11 @@
 from app import app, api, db
-from flask import request, jsonify, make_response
+from flask import request, jsonify, make_response,redirect,url_for,send_from_directory
+from werkzeug.utils import secure_filename
 from flask_restful import Resource, Api, reqparse
+from config import ALLOWED_EXTENSIONS
 import json
+import werkzeug
+import os
 from app import models
 
 
@@ -214,6 +218,7 @@ class Dogs(Resource):
             parser.add_argument('region')
             parser.add_argument('size')
             args = parser.parse_args()
+            print(args)
             gender = models.Dog(args['age'], args['aditional_info'],
                                 args['volounteer_id'],args['gender'],args['status'],
                                 args['region'], args['size'])
@@ -228,19 +233,20 @@ class Dogs(Resource):
             parser.add_argument('status')
             parser.add_argument('region')
             parser.add_argument('size')
+            parser.add_argument('age')
             args = parser.parse_args()
             new_args = {}
             for arg in args:
                 if args[str(arg)]!=None:
                     new_args[str(arg)] = args[str(arg)]
-            print(new_args)
             execute_code = "models.Dog.query.filter_by("
             for arg in new_args:
-
                 execute_code += "%s = %s," % (str(arg),new_args[str(arg)])
-            execute_code = execute_code[0:-1] + ").all()"
+            if len(new_args)>0:
+                execute_code = execute_code[0:-1] + ").all()"
+            else:
+                execute_code = "models.Dog.query.all()"
 
-            print(execute_code)
             dogs_query = eval(execute_code)
             res = {}
             for i in range(len(dogs_query)):
@@ -320,3 +326,66 @@ class Users(Resource):
             return res,201
         except Exception as e:
             return e
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+@app.route('/api/dogs/<dog_id>/photo', methods=['POST','GET'])
+def file_upload_dog(dog_id):
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            app.logger.debug("NO SELECTED FILE")
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            app.logger.debug("NO SELECTED FILE")
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            session = db.session()
+            u = session.query(models.Dog).get(dog_id)
+            u.photo = filename
+            session.commit()
+    return '''
+    <form action="" method=post enctype=multipart/form-data>
+      <p><input type=file name=file>
+         <input type=submit value=Upload>
+    </form>
+    '''
+
+@app.route('/api/users/<user_id>/photo', methods=['POST','GET'])
+def file_upload_user(user_id):
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            app.logger.debug("NO SELECTED FILE")
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            app.logger.debug("NO SELECTED FILE")
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            session = db.session()
+            u = session.query(models.Users).get(user_id)
+            u.photo = filename
+            session.commit()
+    return '''
+    <form action="" method=post enctype=multipart/form-data>
+      <p><input type=file name=file>
+         <input type=submit value=Upload>
+    </form>
+    '''
+
+@app.route('/photos/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)

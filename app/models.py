@@ -22,6 +22,7 @@ def to_json(model):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
+    photo = db.Column(db.String(300),nullable = True)
     first_name = db.Column(db.String(100))
     second_name = db.Column(db.String(100))
     phone_number = db.Column(db.String(100))
@@ -144,7 +145,8 @@ class Size(db.Model):
 
 class Dog(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    age = db.Column(db.String(100),nullable = True)
+    photo = db.Column(db.String(300),nullable = True)
+    age = db.Column(db.Integer,nullable = True)
     aditional_info = db.Column(db.Text,nullable = True)
     volounteer_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     status = db.Column(db.Integer,db.ForeignKey('dog_status.id'))
@@ -173,5 +175,6 @@ class Dog(db.Model):
                 "status":self.status,
                 "gender":self.gender,
                 "region":self.region,
-                "size":self.size
+                "size":self.size,
+                "photo":self.photo
                 }
