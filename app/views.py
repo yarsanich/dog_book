@@ -29,6 +29,7 @@ class Gender(Resource):
             return users_query.to_dict()
         except AttributeError:
             return 404
+
     @auth.login_required
     def delete(self, gender_id):
         try:
@@ -151,6 +152,7 @@ class Dog_Statuses(Resource):
         for i in range(len(users_query)):
             res[i] = users_query[i].to_dict()
         return res
+
     @auth.login_required
     def put(self):
         try:
@@ -216,7 +218,6 @@ class Dog(Resource):
             parser.add_argument('region')
             parser.add_argument('size')
             args = parser.parse_args()
-            print(args)
             session = db.session()
             u = session.query(models.Dog).filter_by(id=dog_id)
             for arg in args:
@@ -243,27 +244,30 @@ class Dogs(Resource):
         for i in range(len(users_query)):
             res[i] = users_query[i].to_dict()
         return res
-    @auth.login_required
     def put(self):
-        try:
-            parser.add_argument('age')
-            parser.add_argument('aditional_info')
-            parser.add_argument('volounteer_id')
-            parser.add_argument('gender')
-            parser.add_argument('status')
-            parser.add_argument('region')
-            parser.add_argument('size')
-            args = parser.parse_args()
-            print(args)
+        parser.add_argument('age')
+        parser.add_argument('aditional_info')
+        parser.add_argument('volounteer_id')
+        parser.add_argument('gender')
+        parser.add_argument('status')
+        parser.add_argument('region')
+        parser.add_argument('size')
+        args = parser.parse_args()
+        if args["volounteer_id"] == None:
+            abort(400,{"errors":"volounteer undefined"})
+        elif args["status"] == None:
+            abort(400,{"errors":"status undefined"})
+        elif args["region"] == None:
+            abort(400,{"errors":"region undefined"})
+        elif args["size"] == None:
+            abort(400,{"errors":"size undefined"})
+        else:
             gender = models.Dog(args['age'], args['aditional_info'],
                                 args['volounteer_id'],args['gender'],args['status'],
                                 args['region'], args['size'])
             gender.add(gender)
             return "200 OK"
-        except Exception as e:
-            return e
 
-    @auth.login_required
     def post(self):
         try:
             parser.add_argument('gender')
@@ -271,6 +275,7 @@ class Dogs(Resource):
             parser.add_argument('region')
             parser.add_argument('size')
             parser.add_argument('age')
+            parser.add_argument('volounteer_id')
             args = parser.parse_args()
             new_args = {}
             for arg in args:
@@ -317,7 +322,7 @@ class User(Resource):
             parser.add_argument('birth_date')
             parser.add_argument('region')
             parser.add_argument('status')
-            parser.add_argument('address')
+            sadasparser.add_argument('address')
             parser.add_argument('email')
             parser.add_argument('aditional_info')
             parser.add_argument('credit_number')
@@ -344,20 +349,28 @@ class Users(Resource):
         return res
     @auth.login_required
     def put(self):
-        try:
-            parser.add_argument('first_name')
-            parser.add_argument('second_name')
-            parser.add_argument('password')
-            parser.add_argument('phone_number')
-            parser.add_argument('birth_date')
-            parser.add_argument('region')
-            parser.add_argument('status')
-            parser.add_argument('address')
-            parser.add_argument('email')
-            parser.add_argument('aditional_info')
-            parser.add_argument('credit_number')
-            parser.add_argument('role')
-            args = parser.parse_args()
+        parser.add_argument('first_name')
+        parser.add_argument('second_name')
+        parser.add_argument('password')
+        parser.add_argument('phone_number')
+        parser.add_argument('birth_date')
+        parser.add_argument('region')
+        parser.add_argument('status')
+        parser.add_argument('address')
+        parser.add_argument('email')
+        parser.add_argument('aditional_info')
+        parser.add_argument('credit_number')
+        parser.add_argument('role')
+        args = parser.parse_args()
+        if args["first_name"] == None:
+            abort(400,{"errors":"first_name undefined"})
+        elif args["second_name"] == None:
+            abort(400,{"errors":"second undefined"})
+        elif args["password"] == None:
+            abort(400,{"errors":"password undefined"})
+        elif args["phone_number"] == None:
+            abort(400,{"errors":"phone_number undefined"})
+        else:
             if args['email'] is None or args['password'] is None:
                 abort(400)    # missing arguments
             if models.User.query.filter_by(email=args['email']).first() is not None:
@@ -369,8 +382,6 @@ class Users(Resource):
             user.hash_password(args["password"])
             user.add(user)
             return "200 OK"
-        except Exception as e:
-            return e
     @auth.login_required
     def post(self):
         try:
