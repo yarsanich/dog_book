@@ -22,7 +22,7 @@ api.add_resource(views.Dog_Statuses, '/api/dogs/statuses/')
 api.add_resource(views.Dog_Status, '/api/dogs/statuses/<int:status_id>')
 
 api.add_resource(views.Volounteer_Statuses, '/api/users/statuses/')
-api.add_resource(views.Volounteer_Status, '/api/users/statuses/<int:status_id>')
+api.add_resource(views.Volounteer_Status, '/api/users/statuses/<int:gender_id>')
 
 api.add_resource(views.Regions, '/api/regions/')
 api.add_resource(views.Region, '/api/regions/<int:regions_id>')
