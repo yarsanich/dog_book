@@ -65,7 +65,7 @@ class Size(Resource):
             return users_query.to_dict()
         except AttributeError:
             return 404
-    @auth.login_required
+    #@auth.login_required
     def delete(self, gender_id):
         try:
             users_query = models.Size.query.filter_by(id=gender_id).first()
@@ -82,7 +82,7 @@ class Sizes(Resource):
         for i in range(len(users_query)):
             res.append(users_query[i].to_dict())
         return res
-    @auth.login_required
+    #@auth.login_required
     def put(self):
         try:
             parser.add_argument('size_title')
@@ -100,7 +100,7 @@ class Region(Resource):
             return users_query.to_dict()
         except AttributeError:
             return 404
-    @auth.login_required
+    #@auth.login_required
     def delete(self, gender_id):
         try:
             users_query = models.Region.query.filter_by(id=gender_id).first()
@@ -117,7 +117,7 @@ class Regions(Resource):
         for i in range(len(users_query)):
             res.append(users_query[i].to_dict())
         return res
-    @auth.login_required
+    #@auth.login_required
     def put(self):
         try:
             parser.add_argument('region_title')
@@ -135,7 +135,7 @@ class Dog_Status(Resource):
             return users_query.to_dict()
         except AttributeError:
             return 404
-    @auth.login_required
+    #@auth.login_required
     def delete(self, gender_id):
         try:
             users_query = models.Dog_Status.query.filter_by(id=gender_id).first()
@@ -153,7 +153,7 @@ class Dog_Statuses(Resource):
             res.append(users_query[i].to_dict())
         return res
 
-    @auth.login_required
+    #@auth.login_required
     def put(self):
         try:
             parser.add_argument('status_title')
@@ -171,7 +171,7 @@ class Volounteer_Status(Resource):
             return users_query.to_dict()
         except AttributeError:
             return 404
-    @auth.login_required
+    #@auth.login_required
     def delete(self, gender_id):
         try:
             users_query = models.Volounteer_Status.query.filter_by(id=gender_id).first()
@@ -188,7 +188,7 @@ class Volounteer_Statuses(Resource):
         for i in range(len(users_query)):
             res.append(users_query[i].to_dict())
         return res
-    @auth.login_required
+    #@auth.login_required
     def put(self):
         try:
             parser.add_argument('status_title')
@@ -207,7 +207,7 @@ class Dog(Resource):
             return users_query.to_dict()
         except AttributeError:
             return 404
-    @auth.login_required
+    #@auth.login_required
     def put(self, dog_id):
         try:
             parser.add_argument('age')
@@ -227,7 +227,7 @@ class Dog(Resource):
             return "200 OK"
         except Exception as e:
             return e
-    @auth.login_required
+    #@auth.login_required
     def delete(self, dog_id):
         try:
             users_query = models.Dog.query.filter_by(id=dog_id).first()
@@ -304,7 +304,7 @@ class User(Resource):
             return users_query.to_dict()
         except AttributeError:
             return 404
-    @auth.login_required
+    #@auth.login_required
     def delete(self, user_id):
         try:
             users_query = models.User.query.filter_by(id=user_id).first()
@@ -339,14 +339,14 @@ class User(Resource):
         except Exception as e:
             return e
 class Users(Resource):
-    @auth.login_required
+    #@auth.login_required
     def get(self):
         users_query = models.User.query.all()
         res = []
         for i in range(len(users_query)):
             res.append(users_query[i].to_dict())
         return res
-    @auth.login_required
+    #@auth.login_required
     def put(self):
         parser.add_argument('first_name')
         parser.add_argument('second_name')
@@ -381,7 +381,7 @@ class Users(Resource):
             user.hash_password(args["password"])
             user.add(user)
             return "200 OK"
-    @auth.login_required
+    #@auth.login_required
     def post(self):
         try:
             parser.add_argument('status')
@@ -460,7 +460,7 @@ def file_upload_user(user_id):
 
 class user_photos(Resource):
     def get(self,user_id):
-        photo_query = models.Photo.query.all()
+        photo_query = models.Photo.query.filter_by(user = user_id).first()
         res = []
         for i in range(len(photo_query)):
             res.append(photo_query[i].to_dict())
