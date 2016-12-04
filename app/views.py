@@ -2,7 +2,7 @@ import json
 import werkzeug
 import os
 from app import app, api, db
-from flask import request, jsonify, make_response,redirect,url_for,send_from_directory,abort
+from flask import request, jsonify, make_response,redirect,url_for,send_from_directory,abort,g
 from werkzeug.utils import secure_filename
 from flask_restful import Resource, Api, reqparse
 from config import ALLOWED_EXTENSIONS,auth
@@ -281,6 +281,7 @@ class Users(Resource):
         res = {}
         for i in range(len(users_query)):
             res[i] = users_query[i].to_dict()
+        print res
         return res
     def put(self):
         try:
@@ -305,7 +306,7 @@ class Users(Resource):
                                args['phone_number'], args['birth_date'],
                                args['region'], args['status'], args['address'],
                                args['email'], args['aditional_info'], args['credit_number'], args['role'])
-            models.User.hash_password(args["password"])
+            user.hash_password(args["password"])
             user.add(user)
             return "200 OK"
         except Exception as e:
@@ -406,19 +407,22 @@ def verify_password(email_or_token, password):
     if not user:
         # try to authenticate with email/password
         user = models.User.query.filter_by(email=email_or_token).first()
-        if not user or not models.User.verify_password(password):
+        if not user or not user.verify_password(password):
             return False
     g.user = user
     return True
 
+def before_request():
+    print current_user
+    g.user = current_user
+
 @app.route('/api/token')
 @auth.login_required
 def get_auth_token():
-    token = g.models.user.generate_auth_token(600)
+    token = g.user.generate_auth_token(600)
     return jsonify({'token': token.decode('ascii'), 'duration': 600})
-
 
 @app.route('/api/resource')
 @auth.login_required
 def get_resource():
-    return jsonify({'data': 'Hello, %s!' % g.models.Useremail})
+    return jsonify({'data': 'Hello, %s!' % g.user.email})

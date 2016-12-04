@@ -29,7 +29,7 @@ class User(db.Model):
     first_name = db.Column(db.String(100))
     second_name = db.Column(db.String(100))
     phone_number = db.Column(db.String(100))
-    password = db.Column(db.String(100))
+    password_hash = db.Column(db.String(100))
     birth_date = db.Column(db.String(100),nullable = True)
     region = db.Column(db.Integer,db.ForeignKey('region.id'),nullable = True)
     status = db.Column(db.Integer,db.ForeignKey('volounteer_status.id'),nullable = True)
@@ -61,7 +61,6 @@ class User(db.Model):
                 "first_name":self.first_name,
                 "second_name":self.second_name,
                 "phone_number":self.phone_number,
-                "password":self.password,
                 "birth_date":self.birth_date,
                 "region":self.region,
                 "status":self.status,
