@@ -461,10 +461,24 @@ def file_upload_user(user_id):
 class user_photos(Resource):
     def get(self,user_id):
         photo_query = models.Photo.query.filter_by(user = user_id).first()
-        res = []
-        for i in range(len(photo_query)):
-            res.append(photo_query[i].to_dict())
-        return res
+        if (photo_query!= None):
+            res = []
+            for i in range(len(photo_query)):
+                res.append(photo_query[i].to_dict())
+            return res
+        else:
+            return {"error":"no pohotos"}
+
+class dog_photos(Resource):
+    def get(self,dog_id):
+        photo_query = models.Photo.query.filter_by(dog = dog_id).first()
+        if photo_query!=None:
+            res = []
+            for i in range(len(photo_query)):
+                res.append(photo_query[i].to_dict())
+            return res
+        else:
+            return {"error":"no pohotos"}
 
 
 @app.route('/photos/<filename>')
